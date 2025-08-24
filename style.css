@@ -1,0 +1,141 @@
+:root {
+  --bg: #0f0f1a;
+  --card-bg: #1e1e2f;
+  --accent: #6a8dff;
+  --accent-glow: #8ab0ff;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #0f0f1a, #1b1b2e, #0f0f1a);
+  background-size: 300% 300%;
+  animation: bgMove 12s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: white;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.container {
+  width: 380px;
+  max-width: 95%;
+}
+
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  animation: popUp 0.6s ease;
+}
+@keyframes popUp {
+  from { transform: scale(0.9) translateY(30px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Switch */
+.switch {
+  padding: 20px;
+}
+.switch-track {
+  position: relative;
+  background: #2a2a40;
+  border-radius: 30px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  user-select: none;
+}
+.switch-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #888;
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+.switch-label.active {
+  color: white;
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 50%;
+  height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(106,141,255,0.6);
+  transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); /* bouncy */
+  z-index: 1;
+  cursor: grab;
+}
+
+/* Forms wrapper */
+.content-wrapper {
+  display: flex;
+  width: 200%;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.form {
+  flex: 1;
+  padding: 30px;
+  opacity: 0.3;
+  transform: scale(0.95);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.form h2 {
+  margin-bottom: 20px;
+}
+.form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+button {
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+button:hover {
+  transform: scale(1.05);
+  background: #4c6cff;
+}
+
+/* Active form pops forward */
+.card.login-active .form.login,
+.card.signup-active .form.signup {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Slide to signup */
+.card.signup-active .switch-thumb {
+  left: calc(50% - 3px);
+}
+.card.signup-active .content-wrapper {
+  transform: translateX(-50%);
+}
