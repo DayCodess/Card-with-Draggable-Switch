@@ -1,70 +1,66 @@
-const card = document.querySelector(".card");
-const thumb = document.querySelector(".switch-thumb");
-const track = document.querySelector(".switch-track");
-const labels = document.querySelectorAll(".switch-label");
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
+const switchBtn = document.querySelector(".switch-btn");
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
+const loginMessage = document.getElementById("loginMessage");
+const signupMessage = document.getElementById("signupMessage");
 
-let isDragging = false;
-let startX = 0;
-let thumbLeft = 3;
-
-card.classList.add("login-active"); // default state
-
-// Drag handling
-thumb.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  startX = e.clientX;
-  thumb.style.transition = "none";
-  document.body.style.userSelect = "none";
+// Switch forms
+signupTab.addEventListener("click", () => {
+  switchBtn.style.left = "calc(50% + 5px)";
+  signupTab.classList.add("active");
+  loginTab.classList.remove("active");
+  loginForm.classList.add("hidden");
+  signupForm.classList.remove("hidden");
 });
 
-document.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  const dx = e.clientX - startX;
-  let newLeft = thumbLeft + dx;
-  const max = track.offsetWidth / 2 - 3;
-  if (newLeft < 3) newLeft = 3;
-  if (newLeft > max) newLeft = max;
-  thumb.style.left = newLeft + "px";
+loginTab.addEventListener("click", () => {
+  switchBtn.style.left = "5px";
+  loginTab.classList.add("active");
+  signupTab.classList.remove("active");
+  signupForm.classList.add("hidden");
+  loginForm.classList.remove("hidden");
 });
 
-document.addEventListener("mouseup", (e) => {
-  if (!isDragging) return;
-  isDragging = false;
-  document.body.style.userSelect = "";
+// Store accounts in localStorage
+const users = JSON.parse(localStorage.getItem("users")) || {};
 
-  const middle = track.offsetWidth / 4;
-  if (parseInt(thumb.style.left) > middle) {
-    setSignup();
+signupForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const username = document.getElementById("signupUsername").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (users[email]) {
+    signupMessage.textContent = "User already exists!";
+    signupMessage.style.color = "orange";
+    return;
+  }
+
+  users[email] = { username, password };
+  localStorage.setItem("users", JSON.stringify(users));
+  signupMessage.textContent = "Signup successful! Please login.";
+  signupMessage.style.color = "#6c63ff";
+  signupForm.reset();
+});
+
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  if (users[email] && users[email].password === password) {
+    if (localStorage.getItem("lastLogin") === email) {
+      loginMessage.textContent = "Welcome back, " + users[email].username + "!";
+    } else {
+      loginMessage.textContent = "Welcome, " + users[email].username + "!";
+    }
+    loginMessage.style.color = "#6c63ff";
+    localStorage.setItem("lastLogin", email);
+    loginForm.reset();
   } else {
-    setLogin();
+    loginMessage.textContent = "Invalid email or password!";
+    loginMessage.style.color = "red";
   }
 });
-
-// Click labels toggle
-labels.forEach(label => {
-  label.addEventListener("click", () => {
-    if (label.classList.contains("left")) setLogin();
-    if (label.classList.contains("right")) setSignup();
-  });
-});
-
-// Functions
-function setLogin() {
-  card.classList.remove("signup-active");
-  card.classList.add("login-active");
-  thumbLeft = 3;
-  thumb.style.transition = "left 0.35s cubic-bezier(0.34,1.56,0.64,1)";
-  thumb.style.left = thumbLeft + "px";
-  labels[0].classList.add("active");
-  labels[1].classList.remove("active");
-}
-
-function setSignup() {
-  card.classList.add("signup-active");
-  card.classList.remove("login-active");
-  thumbLeft = track.offsetWidth / 2 - 3;
-  thumb.style.transition = "left 0.35s cubic-bezier(0.34,1.56,0.64,1)";
-  thumb.style.left = thumbLeft + "px";
-  labels[1].classList.add("active");
-  labels[0].classList.remove("active");
-}
